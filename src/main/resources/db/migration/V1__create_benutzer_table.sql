@@ -1,0 +1,9 @@
+CREATE TABLE IF NOT EXISTS "Benutzer" (
+    UserID SERIAL PRIMARY KEY,
+    Email VARCHAR(255) NOT NULL,
+    Vorname VARCHAR(255) NOT NULL,
+    Nachname VARCHAR(255) NOT NULL,
+    Username VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    Geburtsdatum DATE NOT NULL
+);

@@ -1,44 +1,26 @@
 package de.shopitech.mywish.services;
 
-import de.shopitech.mywish.data.User;
-import de.shopitech.mywish.data.UserRepository;
-import java.util.Optional;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
+import de.shopitech.mywish.data.entity.Benutzer;
+import de.shopitech.mywish.data.repository.BenutzerRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
 
-    private final UserRepository repository;
+    private final BenutzerRepository benutzerRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository repository) {
-        this.repository = repository;
+    @Autowired
+    public UserService(BenutzerRepository benutzerRepository, PasswordEncoder passwordEncoder) {
+        this.benutzerRepository = benutzerRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    public Optional<User> get(Long id) {
-        return repository.findById(id);
-    }
+    public void registerUser(Benutzer user) {
+        user.setEncryptedPassword(passwordEncoder.encode(user.getEncryptedPassword()));
 
-    public User update(User entity) {
-        return repository.save(entity);
+        benutzerRepository.save(user);
     }
-
-    public void delete(Long id) {
-        repository.deleteById(id);
-    }
-
-    public Page<User> list(Pageable pageable) {
-        return repository.findAll(pageable);
-    }
-
-    public Page<User> list(Pageable pageable, Specification<User> filter) {
-        return repository.findAll(filter, pageable);
-    }
-
-    public int count() {
-        return (int) repository.count();
-    }
-
 }

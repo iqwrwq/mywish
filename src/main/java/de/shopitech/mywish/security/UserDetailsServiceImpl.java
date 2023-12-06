@@ -1,9 +1,8 @@
 package de.shopitech.mywish.security;
 
-import de.shopitech.mywish.data.User;
-import de.shopitech.mywish.data.UserRepository;
-import java.util.List;
-import java.util.stream.Collectors;
+import de.shopitech.mywish.data.entity.Benutzer;
+import de.shopitech.mywish.data.repository.BenutzerRepository;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,31 +11,38 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-    private final UserRepository userRepository;
+    private final BenutzerRepository benutzerRepository;
 
-    public UserDetailsServiceImpl(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public UserDetailsServiceImpl(BenutzerRepository benutzerRepository) {
+        this.benutzerRepository = benutzerRepository;
     }
 
     @Override
     @Transactional
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username);
-        if (user == null) {
-            throw new UsernameNotFoundException("No user present with username: " + username);
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        Optional<Benutzer> benutzer = benutzerRepository.findBenutzerByEmail(email);
+        if (benutzer.isEmpty()) {
+            throw new UsernameNotFoundException("No user present with email: " + email);
         } else {
-            return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getHashedPassword(),
-                    getAuthorities(user));
+            Benutzer user = benutzer.get();
+            List<GrantedAuthority> authorities = new ArrayList<>();
+
+            authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+            authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+
+            return new org.springframework.security.core.userdetails.User(
+                    user.getEmail(),
+                    user.getEncryptedPassword(),
+                    authorities
+            );
         }
     }
-
-    private static List<GrantedAuthority> getAuthorities(User user) {
-        return user.getRoles().stream().map(role -> new SimpleGrantedAuthority("ROLE_" + role))
-                .collect(Collectors.toList());
-
-    }
-
 }

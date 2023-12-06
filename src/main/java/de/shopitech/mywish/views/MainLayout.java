@@ -1,33 +1,24 @@
 package de.shopitech.mywish.views;
 
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
-import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.contextmenu.MenuItem;
-import com.vaadin.flow.component.html.Anchor;
-import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Footer;
-import com.vaadin.flow.component.html.H1;
-import com.vaadin.flow.component.html.H2;
-import com.vaadin.flow.component.html.Header;
+import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.menubar.MenuBar;
 import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
 import com.vaadin.flow.router.PageTitle;
-import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.auth.AccessAnnotationChecker;
 import com.vaadin.flow.theme.lumo.LumoUtility;
-import de.shopitech.mywish.data.User;
+import de.shopitech.mywish.data.entity.Benutzer;
 import de.shopitech.mywish.security.AuthenticatedUser;
-import de.shopitech.mywish.views.eventchat.EventchatView;
-import de.shopitech.mywish.views.events.EventsView;
-import de.shopitech.mywish.views.home.HomeView;
-import de.shopitech.mywish.views.register.RegisterView;
-import java.io.ByteArrayInputStream;
-import java.util.Optional;
+import de.shopitech.mywish.views.events.EventOverview;
 import org.vaadin.lineawesome.LineAwesomeIcon;
+
+import java.util.Optional;
 
 /**
  * The main view is a top-level placeholder for other views.
@@ -35,7 +26,6 @@ import org.vaadin.lineawesome.LineAwesomeIcon;
 public class MainLayout extends AppLayout {
 
     private H2 viewTitle;
-
     private AuthenticatedUser authenticatedUser;
     private AccessAnnotationChecker accessChecker;
 
@@ -59,7 +49,7 @@ public class MainLayout extends AppLayout {
     }
 
     private void addDrawerContent() {
-        H1 appName = new H1("My-Wish");
+        H1 appName = new H1("Shopitech My Wish");
         appName.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.Margin.NONE);
         Header header = new Header(appName);
 
@@ -71,21 +61,8 @@ public class MainLayout extends AppLayout {
     private SideNav createNavigation() {
         SideNav nav = new SideNav();
 
-        if (accessChecker.hasAccess(HomeView.class)) {
-            nav.addItem(new SideNavItem("Home", HomeView.class, LineAwesomeIcon.CROWN_SOLID.create()));
-
-        }
-        if (accessChecker.hasAccess(EventsView.class)) {
-            nav.addItem(new SideNavItem("Events", EventsView.class, LineAwesomeIcon.PEACE_SOLID.create()));
-
-        }
-        if (accessChecker.hasAccess(EventchatView.class)) {
-            nav.addItem(new SideNavItem("Eventchat", EventchatView.class, LineAwesomeIcon.COMMENTS.create()));
-
-        }
-        if (accessChecker.hasAccess(RegisterView.class)) {
-            nav.addItem(new SideNavItem("Register", RegisterView.class, LineAwesomeIcon.USER.create()));
-
+        if (accessChecker.hasAccess(EventOverview.class)) {
+            nav.addItem(new SideNavItem("Übersicht", EventOverview.class, LineAwesomeIcon.TH_LIST_SOLID.create()));
         }
 
         return nav;
@@ -94,30 +71,22 @@ public class MainLayout extends AppLayout {
     private Footer createFooter() {
         Footer layout = new Footer();
 
-        Optional<User> maybeUser = authenticatedUser.get();
+        Optional<Benutzer> maybeUser = authenticatedUser.get();
         if (maybeUser.isPresent()) {
-            User user = maybeUser.get();
-
-            Avatar avatar = new Avatar(user.getName());
-            StreamResource resource = new StreamResource("profile-pic",
-                    () -> new ByteArrayInputStream(user.getProfilePicture()));
-            avatar.setImageResource(resource);
-            avatar.setThemeName("xsmall");
-            avatar.getElement().setAttribute("tabindex", "-1");
+            Benutzer user = maybeUser.get();
 
             MenuBar userMenu = new MenuBar();
             userMenu.setThemeName("tertiary-inline contrast");
 
             MenuItem userName = userMenu.addItem("");
             Div div = new Div();
-            div.add(avatar);
-            div.add(user.getName());
+            div.add(user.getVorname());
             div.add(new Icon("lumo", "dropdown"));
             div.getElement().getStyle().set("display", "flex");
             div.getElement().getStyle().set("align-items", "center");
             div.getElement().getStyle().set("gap", "var(--lumo-space-s)");
             userName.add(div);
-            userName.getSubMenu().addItem("Sign out", e -> {
+            userName.getSubMenu().addItem("Ausloggen", e -> {
                 authenticatedUser.logout();
             });
 
