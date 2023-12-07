@@ -34,11 +34,21 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
 import de.shopitech.mywish.components.PriceField;
 import de.shopitech.mywish.data.entity.Benutzer;
+import de.shopitech.mywish.data.entity.Event;
 import de.shopitech.mywish.data.repository.BenutzerRepository;
+import de.shopitech.mywish.data.repository.EventRepository;
 import de.shopitech.mywish.views.MainLayout;
 import jakarta.annotation.security.PermitAll;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 @PageTitle("Shopitech MyWish Event Erstellen")
 @Route(value = "create-event", layout = MainLayout.class)
@@ -46,11 +56,45 @@ import org.springframework.data.domain.PageRequest;
 public class CreateEvent extends Composite<VerticalLayout> {
 
     private final BenutzerRepository benutzerRepository;
+    private final EventRepository eventRepository;
 
-    public CreateEvent(BenutzerRepository benutzerRepository) {
+    public CreateEvent(BenutzerRepository benutzerRepository, EventRepository eventRepository) {
         this.benutzerRepository = benutzerRepository;
+        this.eventRepository = eventRepository;
+
+        Button createDummyData = new Button("create dummy data");
+        createDummyData.addClickListener(event -> {
+            Event event1 = new Event();
+            event1.setEventID(UUID.randomUUID());
+
+            // Randomly select one of the users
+            List<String> userEmails = Arrays.asList("sample@email.com", "Arthur.schimpf@gmx.de");
+            String randomUserEmail = userEmails.get(ThreadLocalRandom.current().nextInt(userEmails.size()));
+            event1.setErstellerUser(benutzerRepository.findBenutzerByEmail(randomUserEmail).orElseThrow());
+
+            // Generate a random event name
+            event1.setPflichtname(generateRandomString(15));
+
+            // Generate a random date within a specific range
+            LocalDate startDate = LocalDate.of(2023, 12, 1);
+            LocalDate endDate = LocalDate.of(2023, 12, 31);
+            long startEpochDay = startDate.toEpochDay();
+            long endEpochDay = endDate.toEpochDay();
+            long randomDay = ThreadLocalRandom.current().nextLong(startEpochDay, endEpochDay + 1);
+            LocalDate randomDate = LocalDate.ofEpochDay(randomDay);
+            event1.setDatum(randomDate);
+
+            // Generate random description, ort, and adresse
+            event1.setBeschreibung(generateRandomString(20));
+            event1.setOrt(generateRandomString(10));
+            event1.setAdresse(generateRandomString(15));
+
+            eventRepository.save(event1);
+        });
 
         VerticalLayout layoutColumn2 = new VerticalLayout();
+        layoutColumn2.add(createDummyData);
+
         VerticalLayout layoutColumn3 = new VerticalLayout();
         AvatarGroup avatarGroup = new AvatarGroup();
         H1 h1 = new H1();
@@ -60,8 +104,7 @@ public class CreateEvent extends Composite<VerticalLayout> {
         TimePicker timePicker = new TimePicker();
         TextField textField2 = new TextField();
         PriceField price = new PriceField();
-        price.setVisible(false);
-        CheckboxGroup checkboxGroup = new CheckboxGroup();
+        CheckboxGroup<String> checkboxGroup = new CheckboxGroup<>();
         TextArea textArea = new TextArea();
         HorizontalLayout layoutRow = new HorizontalLayout();
         PriceField price2 = new PriceField();
@@ -70,10 +113,15 @@ public class CreateEvent extends Composite<VerticalLayout> {
         TextField textField4 = new TextField();
         NumberField numberField = new NumberField();
         H2 h2 = new H2();
-        Grid basicGrid = new Grid(Benutzer.class);
+        Grid<Benutzer> basicGrid = new Grid<>(Benutzer.class);
         HorizontalLayout layoutRow2 = new HorizontalLayout();
         Button buttonPrimary = new Button();
         Button buttonSecondary = new Button();
+        buttonSecondary.addClickListener(buttonClickEvent -> {
+            getUI().ifPresent(ui -> {
+                ui.navigate(EventOverview.class);
+            });
+        });
         getContent().setWidth("100%");
         getContent().getStyle().set("flex-grow", "1");
         getContent().setJustifyContentMode(FlexComponent.JustifyContentMode.START);
@@ -103,12 +151,9 @@ public class CreateEvent extends Composite<VerticalLayout> {
         checkboxGroup.setWidth("min-content");
 
         Checkbox setPriceCheckBox = new Checkbox("Price");
-        setPriceCheckBox.addValueChangeListener(event -> {
-
-        });
-        checkboxGroup.setItems(setPriceCheckBox);
-
+        checkboxGroup.setItems(setPriceCheckBox.getLabel());
         checkboxGroup.addThemeVariants(CheckboxGroupVariant.LUMO_VERTICAL);
+
         textArea.setLabel("Description");
         textArea.setWidth("100%");
         layoutRow.setHeightFull();
@@ -163,6 +208,18 @@ public class CreateEvent extends Composite<VerticalLayout> {
         getContent().add(layoutRow2);
         layoutRow2.add(buttonPrimary);
         layoutRow2.add(buttonSecondary);
+    }
+
+    private String generateRandomString(int length) {
+        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        StringBuilder randomString = new StringBuilder();
+
+        for (int i = 0; i < length; i++) {
+            int index = ThreadLocalRandom.current().nextInt(characters.length());
+            randomString.append(characters.charAt(index));
+        }
+
+        return randomString.toString();
     }
 
     private void setAvatarGroupSampleData(AvatarGroup avatarGroup) {

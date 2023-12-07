@@ -1,11 +1,15 @@
 package de.shopitech.mywish.data.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.UUID;
 
 @Entity
+@Data
 public class Event {
 
     @Id
@@ -16,10 +20,8 @@ public class Event {
     private Benutzer erstellerUser;
 
     private String pflichtname;
-    private Date datum;
+    private LocalDate datum;
     private String beschreibung;
     private String ort;
     private String adresse;
-
-    // Getter und Setter
 }

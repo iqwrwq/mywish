@@ -10,16 +10,27 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
+import de.shopitech.mywish.data.entity.Event;
+import de.shopitech.mywish.data.repository.EventRepository;
+import de.shopitech.mywish.security.AuthenticatedUser;
 import de.shopitech.mywish.views.MainLayout;
 import de.shopitech.mywish.views.events.components.EventCard;
 import jakarta.annotation.security.PermitAll;
 
-@PageTitle("Shopitech MyWish Event Übersicht")
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@PageTitle("Event Übersicht")
 @Route(value = "", layout = MainLayout.class)
 @PermitAll
 public class EventOverview extends Main {
 
-    public EventOverview() {
+    private EventRepository eventRepository;
+
+    public EventOverview(EventRepository eventRepository, AuthenticatedUser authenticatedUser) {
+        this.eventRepository = eventRepository;
 
         MenuBar menu = new MenuBar();
         MenuItem createEventItem = menu.addItem("Create");
@@ -35,17 +46,13 @@ public class EventOverview extends Main {
 
         main.addClassName("event-overview");
 
-        main.add(new EventCard("1", "https://picsum.photos/400/200"));
-        main.add(new EventCard("2", "https://picsum.photos/401/200"));
-        main.add(new EventCard("3", "https://picsum.photos/402/200"));
-        main.add(new EventCard("4", "https://picsum.photos/403/200"));
-        main.add(new EventCard("5", "https://picsum.photos/404/200"));
-        main.add(new EventCard("6", "https://picsum.photos/405/200"));
-        main.add(new EventCard("7", "https://picsum.photos/406/200"));
-        main.add(new EventCard("8", "https://picsum.photos/407/200"));
-        main.add(new EventCard("9", "https://picsum.photos/408/200"));
-        main.add(new EventCard("10", "https://picsum.photos/409/200"));
-        main.add(new EventCard("11", "https://picsum.photos/410/200"));
+        List<Event> eventList = eventRepository.findAll()
+                .stream()
+                .sorted(Comparator.comparing(Event::getDatum))
+                .toList();
+        for (Event event : eventList) {
+            main.add(new EventCard(event, authenticatedUser));
+        }
 
         add(header, main);
     }

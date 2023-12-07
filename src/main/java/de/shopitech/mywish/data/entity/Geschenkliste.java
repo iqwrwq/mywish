@@ -2,10 +2,12 @@ package de.shopitech.mywish.data.entity;
 
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.util.UUID;
 
 @Entity
+@Data
 public class Geschenkliste {
 
     @Id

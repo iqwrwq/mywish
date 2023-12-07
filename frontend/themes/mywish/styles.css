@@ -1,23 +1,24 @@
 @import url('./main-layout.css');
 @import url('./views/eventchat-view.css');
 @import url('./views/event-overview.css');
-@import url('@fontsource/barlow/index.css');    html {
-      --lumo-primary-color: hsl(267, 65%, 68%);
-      --lumo-primary-color-50pct: hsla(267, 65%, 68%, 0.5);
-      --lumo-primary-color-10pct: hsla(267, 65%, 68%, 0.1);
-      --lumo-primary-text-color: hsl(267, 65%, 68%);
-      --lumo-font-family: Arial;
+@import url('@fontsource/barlow/index.css');
 
-    }
+html {
+    --lumo-primary-color: hsl(268, 28%, 27%);
+    --lumo-primary-color-50pct: hsla(267, 65%, 68%, 0.5);
+    --lumo-primary-color-10pct: hsla(267, 65%, 68%, 0.1);
+    --lumo-primary-text-color: hsl(267, 65%, 68%);
+    --lumo-font-family: Arial;
+}
 
-    [theme~="dark"] {
-      --lumo-primary-color: hsl(267, 65%, 68%);
-      --lumo-primary-color-50pct: hsla(267, 65%, 68%, 0.5);
-      --lumo-primary-color-10pct: hsla(267, 65%, 68%, 0.1);
-      --lumo-primary-text-color: hsl(267, 65%, 68%);
+[theme~="dark"] {
+    --lumo-primary-color: hsl(267, 65%, 68%);
+    --lumo-primary-color-50pct: hsla(267, 65%, 68%, 0.5);
+    --lumo-primary-color-10pct: hsla(267, 65%, 68%, 0.1);
+    --lumo-primary-text-color: hsl(267, 65%, 68%);
+    --vaadin-input-field-readonly-border: unset;
+}
 
-    }
-
-.header{
+.header {
     padding: 2rem;
 }
