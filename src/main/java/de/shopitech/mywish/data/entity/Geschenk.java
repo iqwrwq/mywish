@@ -23,6 +23,7 @@ public class Geschenk {
 
     @ManyToOne
     private Benutzer reserviererUser;
-
-    // Getter und Setter
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    private byte[] picture;
 }

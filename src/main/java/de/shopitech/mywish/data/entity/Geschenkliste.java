@@ -24,6 +24,4 @@ public class Geschenkliste {
 
     @ManyToOne
     private Benutzer berechtigungUser;
-
-    // Getter und Setter
 }

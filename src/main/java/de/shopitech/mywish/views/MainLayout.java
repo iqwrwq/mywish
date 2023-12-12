@@ -3,6 +3,7 @@ package de.shopitech.mywish.views;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
+import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.contextmenu.MenuItem;
 import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.Icon;
@@ -11,13 +12,17 @@ import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
 import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.auth.AccessAnnotationChecker;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import de.shopitech.mywish.data.entity.Benutzer;
 import de.shopitech.mywish.security.AuthenticatedUser;
+import de.shopitech.mywish.views.demoData.DeveloperDashboard;
 import de.shopitech.mywish.views.events.EventOverview;
+import de.shopitech.mywish.views.social.UserProfile;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 
+import java.io.ByteArrayInputStream;
 import java.util.Optional;
 
 /**
@@ -64,6 +69,12 @@ public class MainLayout extends AppLayout {
         if (accessChecker.hasAccess(EventOverview.class)) {
             nav.addItem(new SideNavItem("Übersicht", EventOverview.class, LineAwesomeIcon.TH_LIST_SOLID.create()));
         }
+        if (accessChecker.hasAccess(EventOverview.class)) {
+            nav.addItem(new SideNavItem("Profil", UserProfile.class, LineAwesomeIcon.USER.create()));
+        }
+        if (accessChecker.hasAccess(EventOverview.class)) {
+            nav.addItem(new SideNavItem("DEV", DeveloperDashboard.class, LineAwesomeIcon.DEV.create()));
+        }
 
         return nav;
     }
@@ -75,11 +86,19 @@ public class MainLayout extends AppLayout {
         if (maybeUser.isPresent()) {
             Benutzer user = maybeUser.get();
 
+            Avatar avatar = new Avatar(maybeUser.get().getVorname());
+            StreamResource resource = new StreamResource("profile-pic",
+                    () -> new ByteArrayInputStream(user.getProfilePicture()));
+            avatar.setImageResource(resource);
+            avatar.setThemeName("xsmall");
+            avatar.getElement().setAttribute("tabindex", "-1");
+
             MenuBar userMenu = new MenuBar();
             userMenu.setThemeName("tertiary-inline contrast");
 
             MenuItem userName = userMenu.addItem("");
             Div div = new Div();
+            div.add(avatar);
             div.add(user.getVorname());
             div.add(new Icon("lumo", "dropdown"));
             div.getElement().getStyle().set("display", "flex");
@@ -88,6 +107,11 @@ public class MainLayout extends AppLayout {
             userName.add(div);
             userName.getSubMenu().addItem("Ausloggen", e -> {
                 authenticatedUser.logout();
+            });
+            userName.getSubMenu().addItem("DEVMENU", e -> {
+                getUI().ifPresent(ui -> {
+                    ui.navigate(DeveloperDashboard.class);
+                });
             });
 
             layout.add(userMenu);

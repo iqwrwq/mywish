@@ -21,6 +21,10 @@ public class Benutzer {
     private String username;
     private String encryptedPassword;
     private Date geburtsdatum;
-
-    // Getter und Setter
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    private byte[] profilePicture;
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    private byte[] profileBanner;
 }

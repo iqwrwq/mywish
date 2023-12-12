@@ -14,6 +14,7 @@ import com.vaadin.flow.component.textfield.TextAreaVariant;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.router.*;
+import com.vaadin.flow.server.StreamResource;
 import de.shopitech.mywish.data.entity.Benutzer;
 import de.shopitech.mywish.data.entity.Event;
 import de.shopitech.mywish.data.entity.Geschenkliste;
@@ -27,6 +28,7 @@ import de.shopitech.mywish.views.geschenke.components.GeschenklisteCard;
 import de.shopitech.mywish.views.geschenke.components.GeschenklisteCreateCard;
 import jakarta.annotation.security.PermitAll;
 
+import java.io.ByteArrayInputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -77,8 +79,8 @@ public class EventDetail extends Main implements HasUrlParameter<String> {
 
         Image image = new Image();
         image.setWidth("100%");
-        String imageUrl = "https://picsum.photos/1400/400";
-        image.setSrc(imageUrl);
+        StreamResource resourcePicture = new StreamResource("profile-picture", () -> new ByteArrayInputStream(event.getEventBanner()));
+        image.setSrc(resourcePicture);
         image.addClassName("event-detail-image");
 
         Div titleRow = new Div();

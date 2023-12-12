@@ -1,13 +1,16 @@
 package de.shopitech.mywish.views.events.components;
 
 import com.vaadin.flow.component.avatar.AvatarGroup;
+import com.vaadin.flow.component.contextmenu.ContextMenu;
 import com.vaadin.flow.component.html.*;
+import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import de.shopitech.mywish.data.entity.Benutzer;
 import de.shopitech.mywish.data.entity.Event;
 import de.shopitech.mywish.security.AuthenticatedUser;
 import de.shopitech.mywish.views.events.EventDetail;
 
+import java.io.ByteArrayInputStream;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,18 +35,25 @@ public class EventCard extends ListItem {
         });
 
         Div div = new Div();
+        div.addClassNames("event-image-container");
         div.addClassNames(LumoUtility.Background.CONTRAST, LumoUtility.Display.FLEX, LumoUtility.AlignItems.CENTER, LumoUtility.JustifyContent.CENTER,
                 LumoUtility.Margin.Bottom.MEDIUM, LumoUtility.Overflow.HIDDEN, LumoUtility.BorderRadius.MEDIUM, LumoUtility.Width.FULL);
         div.setHeight("160px");
 
-        Image image = new Image();
-        image.setWidth("100%");
-        String imageUrl = String.format("https://picsum.photos/%d/%d",
-                ThreadLocalRandom.current().nextInt(395, 416),
-                ThreadLocalRandom.current().nextInt(195, 216));
-        image.setSrc(imageUrl);
+        Image benutzerScopeImage = new Image();
+        benutzerScopeImage.setClassName("benutzer-event-image");
+        StreamResource pbPicture = new StreamResource("event-banner", () -> new ByteArrayInputStream(benutzerScope.getProfilePicture()));
+        benutzerScopeImage.setSrc(pbPicture);
+        ContextMenu contextMenu = new ContextMenu();
+        benutzerScopeImage.add(contextMenu);
 
-        div.add(image);
+        Image eventBanner = new Image();
+        eventBanner.setWidth("100%");
+
+        StreamResource resourcePicture = new StreamResource("event-banner", () -> new ByteArrayInputStream(eventScope.getEventBanner()));
+        eventBanner.setSrc(resourcePicture);
+
+        div.add(eventBanner, benutzerScopeImage);
 
         Span header = new Span();
         header.addClassNames(LumoUtility.FontSize.XLARGE, LumoUtility.FontWeight.SEMIBOLD);

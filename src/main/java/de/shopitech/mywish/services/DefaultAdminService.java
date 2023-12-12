@@ -6,6 +6,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Optional;
 
 @Service
@@ -32,6 +36,21 @@ public class DefaultAdminService {
             Benutzer adminUser = new Benutzer();
             adminUser.setEmail(adminUsername);
             adminUser.setEncryptedPassword(passwordEncoder.encode(adminPassword));
+            adminUser.setVorname("ADMIN");
+            adminUser.setNachname("ADMIN");
+            try {
+                Path profilePicturePath = Paths.get("src/main/resources", "pb0.jpeg");
+                adminUser.setProfilePicture(Files.readAllBytes(profilePicturePath));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            try {
+                Path profileBannerPath = Paths.get("src/main/resources", "banner0.jpeg");
+                adminUser.setProfileBanner(Files.readAllBytes(profileBannerPath));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             benutzerRepository.save(adminUser);
 
             System.out.println("Default admin user created successfully.");

@@ -23,14 +23,14 @@ public class GeschenkCard extends ListItem {
         div.setHeight("160px");
         setMinHeight("350px");
 
-        Image image = new Image();
-        image.setWidth("100%");
+        Image banner = new Image();
+        banner.setWidth("100%");
         String imageUrl = String.format("https://picsum.photos/%d/%d",
                 ThreadLocalRandom.current().nextInt(195, 216),
                 ThreadLocalRandom.current().nextInt(195, 216));
-        image.setSrc(imageUrl);
+        banner.setSrc(imageUrl);
 
-        div.add(image);
+        div.add(banner);
 
         Span header = new Span();
         header.addClassNames(LumoUtility.FontSize.XLARGE, LumoUtility.FontWeight.SEMIBOLD);

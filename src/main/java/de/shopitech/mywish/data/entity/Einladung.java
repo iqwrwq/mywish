@@ -17,6 +17,4 @@ public class Einladung {
     private Benutzer eingeladenerUser;
 
     private String einladungsStatus;
-
-    // Getter und Setter
 }

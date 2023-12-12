@@ -74,25 +74,7 @@ public class GeschenklisteDetail extends Main implements HasUrlParameter<String>
 
         Button button = new Button("ceate dummy geschenk");
         button.addClickListener(buttonClickEvent -> {
-            Geschenk geschenk = new Geschenk();
-            geschenk.setGeschenkID(UUID.randomUUID());
 
-            double randomPreis = ThreadLocalRandom.current().nextDouble(10.0, 100.0);
-            int randomMenge = ThreadLocalRandom.current().nextInt(1, 10);
-
-            geschenk.setPreis(randomPreis);
-            geschenk.setMenge(randomMenge);
-
-            geschenk.setListe(geschenklisteScope);
-            String randomProduktLink = "https://example.com/product/" + UUID.randomUUID().toString();
-            geschenk.setProduktLink(randomProduktLink);
-            List<String> userEmails = Arrays.asList("sample@email.com", "Arthur.schimpf@gmx.de");
-            String randomUserEmail = userEmails.get(ThreadLocalRandom.current().nextInt(userEmails.size()));
-            Benutzer reserviererUser = benutzerRepository.findBenutzerByEmail(randomUserEmail).orElse(null);
-            geschenk.setReserviererUser(reserviererUser);
-
-
-            geschenkRepository.save(geschenk);
         });
 
         add(geschenkeListe, button);
