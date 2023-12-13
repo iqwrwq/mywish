@@ -79,8 +79,7 @@ public class EventDetail extends Main implements HasUrlParameter<String> {
 
         Image image = new Image();
         image.setWidth("100%");
-        StreamResource resourcePicture = new StreamResource("profile-picture", () -> new ByteArrayInputStream(event.getEventBanner()));
-        image.setSrc(resourcePicture);
+        image.setSrc(benutzerScope.getAvatarUrl());
         image.addClassName("event-detail-image");
 
         Div titleRow = new Div();

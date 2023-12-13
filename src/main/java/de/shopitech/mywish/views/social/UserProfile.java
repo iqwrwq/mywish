@@ -33,14 +33,12 @@ public class UserProfile extends VerticalLayout implements HasUrlParameter<Strin
         this.benutzerRepository = benutzerRepository;
 
         Image banner = new Image();
-        StreamResource resourceBanner = new StreamResource("profile-banner", () -> new ByteArrayInputStream(scope.getProfileBanner()));
-        banner.setSrc(resourceBanner);
+        banner.setSrc("/src/main/resources/banner0.jpeg");
         banner.addClassName("profile-banner");
 
         this.profilePicture = new Image();
         profilePicture.addClassName("profile-picture");
-        StreamResource resourcePicture = new StreamResource("profile-picture", () -> new ByteArrayInputStream(scope.getProfilePicture()));
-        profilePicture.setSrc(resourcePicture);
+        profilePicture.setSrc(scope.getAvatarUrl());
 
         Header header = new Header(banner, profilePicture);
         header.addClassName("profile-header");
@@ -72,16 +70,7 @@ public class UserProfile extends VerticalLayout implements HasUrlParameter<Strin
 
         if (!(parameter == null)) {
             this.scope = benutzerRepository.findById(UUID.fromString(parameter)).get();
-
-            if (scope.getProfilePicture() != null) {
-                StreamResource resourcePicture = new StreamResource("profile-picture", () -> new ByteArrayInputStream(scope.getProfilePicture()));
-                profilePicture.setSrc(resourcePicture);
-            }
-
-            if (scope.getProfileBanner() != null) {
-                StreamResource resourceBanner = new StreamResource("profile-banner", () -> new ByteArrayInputStream(scope.getProfileBanner()));
-                profilePicture.setSrc(resourceBanner);
-            }
+            profilePicture.setSrc(scope.getAvatarUrl());
         }
     }
 }

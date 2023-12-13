@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
+import static de.shopitech.mywish.data.entity.Benutzer.DICE_API_URL;
+
 @Route(value = "create-demo-users")
 @PermitAll
 public class CreateUsers extends Div implements HasUrlParameter<String> {
@@ -76,14 +78,7 @@ public class CreateUsers extends Div implements HasUrlParameter<String> {
                 benutzer.setVorname(lorem.getFirstName());
                 benutzer.setNachname(lorem.getLastName());
                 benutzer.setEncryptedPassword(AuthenticatedUser.hashPassword("123"));
-
-                int randomPictureIndex = random.nextInt(3) + 1;
-                byte[] profilePictureData = loadProfilePictureData(randomPictureIndex);
-                benutzer.setProfilePicture(profilePictureData);
-
-                int randomBannerIndex = random.nextInt(5) + 1;
-                byte[] bannerData = loadProfilePictureData(randomBannerIndex);
-                benutzer.setProfilePicture(bannerData);
+                benutzer.setAvatarUrl(DICE_API_URL + benutzer.getUserID().toString());
 
                 data.add(benutzer);
 

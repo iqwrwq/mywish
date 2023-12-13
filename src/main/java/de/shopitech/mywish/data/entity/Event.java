@@ -24,7 +24,5 @@ public class Event {
     private String beschreibung;
     private String ort;
     private String adresse;
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
-    private byte[] eventBanner;
+    private String profile_pic;
 }

@@ -13,12 +13,8 @@ import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 import de.shopitech.mywish.data.entity.Benutzer;
 import de.shopitech.mywish.data.entity.Event;
-import de.shopitech.mywish.data.entity.Geschenk;
 import de.shopitech.mywish.data.repository.BenutzerRepository;
 import de.shopitech.mywish.data.repository.EventRepository;
-import de.shopitech.mywish.data.repository.GeschenkRepository;
-import de.shopitech.mywish.views.events.CreateEvent;
-import de.shopitech.mywish.views.events.EventOverview;
 import jakarta.annotation.security.PermitAll;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -30,8 +26,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 @Route(value = "create-demo-events")
@@ -72,29 +69,24 @@ public class CreateEvents extends Div implements HasUrlParameter<String> {
             Grid<Event> items = new Grid<>(Event.class);
             List<Event> data = new ArrayList<>();
             List<Benutzer> allUsers = benutzerRepository.findAll();
+            List<Event> events = new ArrayList<>();
+
+            List<CompletableFuture<Event>> futureEvents = new ArrayList<>();
 
             for (int i = 0; i < Integer.parseInt(parameter); i++) {
-                Event event = new Event();
-                event.setEventID(UUID.randomUUID());
-                event.setAdresse(lorem.getCity());
-                event.setBeschreibung(lorem.getWords(5));
-                int randomPictureIndex = random.nextInt(5) + 1;
-                byte[] banner = loadEventBanner(randomPictureIndex);
-                event.setEventBanner(banner);
-                LocalDate currentDate = LocalDate.now();
-                int randomDays = new Random().nextInt(365) + 1;
-                LocalDate futureDate = currentDate.plusDays(randomDays);
-                event.setDatum(futureDate);
-                event.setOrt(lorem.getCity());
-                event.setPflichtname(lorem.getName());
-                int randomUserIndex = random.nextInt(allUsers.size());
-                Benutzer randomUser = allUsers.get(randomUserIndex);
-                event.setErstellerUser(randomUser);
-
-                data.add(event);
-
-                eventRepository.save(event);
+                CompletableFuture<Event> futureEvent = createEventAsync(allUsers);
+                futureEvents.add(futureEvent);
             }
+
+            CompletableFuture<Void> allOf = CompletableFuture.allOf(futureEvents.toArray(new CompletableFuture[0]));
+
+            allOf.get();
+
+            for (CompletableFuture<Event> futureEvent : futureEvents) {
+                data.add(futureEvent.get());
+            }
+
+            eventRepository.saveAll(events);
 
             items.setItems(data);
             add(new H1("☑️ " + parameter + " Event(s) ☑️"));
@@ -104,8 +96,42 @@ public class CreateEvents extends Div implements HasUrlParameter<String> {
         }
     }
 
+    private CompletableFuture<Event> createEventAsync(List<Benutzer> allUsers) {
+        return CompletableFuture.supplyAsync(() -> {
+            Event event = new Event();
+
+            event.setEventID(UUID.randomUUID());
+            event.setAdresse(lorem.getCity());
+            event.setBeschreibung(lorem.getWords(5));
+            LocalDate currentDate = LocalDate.now();
+            int randomDays = new Random().nextInt(365) + 1;
+            LocalDate futureDate = currentDate.plusDays(randomDays);
+            event.setDatum(futureDate);
+            event.setOrt(lorem.getCity());
+            event.setPflichtname(lorem.getName());
+            int randomUserIndex = random.nextInt(allUsers.size());
+            Benutzer randomUser = allUsers.get(randomUserIndex);
+            event.setErstellerUser(randomUser);
+
+            return event;
+        });
+    }
+
+    private CompletableFuture<byte[]> loadImageAsync(int index) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                byte[] imageBytes = loadEventBanner(index);
+                return imageBytes;
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
     private byte[] loadEventBanner(int index) throws IOException {
         Resource resource = new ClassPathResource("eventBanner" + index + ".jpeg");
         return StreamUtils.copyToByteArray(resource.getInputStream());
     }
 }
+
+

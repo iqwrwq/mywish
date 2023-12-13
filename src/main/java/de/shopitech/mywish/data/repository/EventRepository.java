@@ -9,8 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 import java.util.UUID;
 
+@Transactional
 public interface EventRepository extends JpaRepository<Event, UUID> {
 
-    @Transactional
     Optional<Event> findByEventID(UUID id);
 }

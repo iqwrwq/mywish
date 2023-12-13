@@ -21,7 +21,7 @@ public class DeveloperDashboard extends VerticalLayout {
         if (!numberField.isEmpty()) {
             number = String.valueOf(Math.round(numberField.getValue()));
         } else {
-            number = "5";
+            number = "1";
         }
 
         Button back = new Button("Back");

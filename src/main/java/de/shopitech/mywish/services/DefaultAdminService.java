@@ -12,6 +12,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
 
+import static de.shopitech.mywish.data.entity.Benutzer.DICE_API_URL;
+
 @Service
 public class DefaultAdminService {
 
@@ -38,19 +40,8 @@ public class DefaultAdminService {
             adminUser.setEncryptedPassword(passwordEncoder.encode(adminPassword));
             adminUser.setVorname("ADMIN");
             adminUser.setNachname("ADMIN");
-            try {
-                Path profilePicturePath = Paths.get("src/main/resources", "pb0.jpeg");
-                adminUser.setProfilePicture(Files.readAllBytes(profilePicturePath));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            adminUser.setAvatarUrl(DICE_API_URL + adminUser.getUserID());
 
-            try {
-                Path profileBannerPath = Paths.get("src/main/resources", "banner0.jpeg");
-                adminUser.setProfileBanner(Files.readAllBytes(profileBannerPath));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
             benutzerRepository.save(adminUser);
 
             System.out.println("Default admin user created successfully.");

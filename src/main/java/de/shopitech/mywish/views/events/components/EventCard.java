@@ -42,16 +42,12 @@ public class EventCard extends ListItem {
 
         Image benutzerScopeImage = new Image();
         benutzerScopeImage.setClassName("benutzer-event-image");
-        StreamResource pbPicture = new StreamResource("event-banner", () -> new ByteArrayInputStream(benutzerScope.getProfilePicture()));
-        benutzerScopeImage.setSrc(pbPicture);
+        benutzerScopeImage.setSrc(benutzerScope.getAvatarUrl());
         ContextMenu contextMenu = new ContextMenu();
         benutzerScopeImage.add(contextMenu);
 
         Image eventBanner = new Image();
         eventBanner.setWidth("100%");
-
-        StreamResource resourcePicture = new StreamResource("event-banner", () -> new ByteArrayInputStream(eventScope.getEventBanner()));
-        eventBanner.setSrc(resourcePicture);
 
         div.add(eventBanner, benutzerScopeImage);
 

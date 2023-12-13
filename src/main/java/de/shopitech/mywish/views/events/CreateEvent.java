@@ -54,25 +54,16 @@ public class CreateEvent extends VerticalLayout {
         this.eventRepository = eventRepository;
         this.uploadedImage = null;
 
-
-        Div imageContainer = new Div();
         imageUpload.setAcceptedFileTypes(".jpeg", ".jpg");
         imageUpload.setDropAllowed(false);
         imageUpload.setMaxFiles(1);
+        imageUpload.getUploadButton();
 
         imageUpload.setUploadButton(new Button("Upload Image"));
         imageUpload.addSucceededListener(event -> {
             InputStream fileData = buffer.getInputStream();
             uploadedImage = readBytes(fileData);
-
-            StreamResource resource = new StreamResource("uploaded-image", () -> new ByteArrayInputStream(uploadedImage));
-            Image uploadedImageView = new Image(resource, "Uploaded Image");
-            uploadedImageView.setWidth("600px");
-            uploadedImageView.setHeight("300px");
-            imageContainer.add(uploadedImageView);
         });
-
-        imageContainer.add(imageUpload);
 
         Button save = new Button("Save");
         save.addClickListener(buttonClickEvent -> {
@@ -80,17 +71,6 @@ public class CreateEvent extends VerticalLayout {
             UUID id = UUID.randomUUID();
             event.setEventID(id);
             event.setPflichtname(eventName.getValue());
-
-            if (uploadedImage != null && uploadedImage.length > 0) {
-                event.setEventBanner(uploadedImage);
-            } else {
-                try {
-                    event.setEventBanner(loadEventBanner());
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-
             event.setBeschreibung(description.getValue());
             event.setAdresse(eventAdress.getValue());
             event.setDatum(eventDate.getValue());
@@ -98,19 +78,10 @@ public class CreateEvent extends VerticalLayout {
             event.setErstellerUser(authenticatedUser.get().get());
 
             eventRepository.save(event);
-            Notification.show("Event Created!");
-
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            } finally {
-                getUI().ifPresent(ui -> ui.navigate(EventDetail.class, event.getEventID().toString()));
-            }
         });
 
         FormLayout formLayout = new FormLayout();
-        formLayout.add(eventName, imageContainer, description, eventAdress, eventDate, eventCity, save);
+        formLayout.add(eventName, imageUpload, description, eventAdress, eventDate, eventCity, save);
         add(formLayout);
     }
 
