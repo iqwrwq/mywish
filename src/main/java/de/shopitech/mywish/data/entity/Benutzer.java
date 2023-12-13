@@ -23,4 +23,5 @@ public class Benutzer {
     private String encryptedPassword;
     private Date geburtsdatum;
     private String avatarUrl;
+    private String bannerUrl;
 }

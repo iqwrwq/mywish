@@ -24,19 +24,30 @@ import java.util.UUID;
 @PermitAll
 public class UserProfile extends VerticalLayout implements HasUrlParameter<String> {
 
+    private Benutzer currentUser;
     private Benutzer scope;
-    private Image profilePicture;
     private BenutzerRepository benutzerRepository;
 
     public UserProfile(AuthenticatedUser authenticatedUser, BenutzerRepository benutzerRepository) {
-        this.scope = authenticatedUser.get().get();
+        this.currentUser = authenticatedUser.get().get();
         this.benutzerRepository = benutzerRepository;
 
+    }
+
+    @Override
+    public void setParameter(BeforeEvent beforeEvent, @OptionalParameter String parameter) {
+        if ((parameter == null)) {
+            this.scope = currentUser;
+
+        } else {
+            this.scope = benutzerRepository.findById(UUID.fromString(parameter)).get();
+        }
+
         Image banner = new Image();
-        banner.setSrc("/src/main/resources/banner0.jpeg");
+        banner.setSrc(scope.getBannerUrl());
         banner.addClassName("profile-banner");
 
-        this.profilePicture = new Image();
+        Image profilePicture = new Image();
         profilePicture.addClassName("profile-picture");
         profilePicture.setSrc(scope.getAvatarUrl());
 
@@ -63,14 +74,5 @@ public class UserProfile extends VerticalLayout implements HasUrlParameter<Strin
         profileRow.addClassName("profile-row");
 
         add(header, profileRow);
-    }
-
-    @Override
-    public void setParameter(BeforeEvent beforeEvent, @OptionalParameter String parameter) {
-
-        if (!(parameter == null)) {
-            this.scope = benutzerRepository.findById(UUID.fromString(parameter)).get();
-            profilePicture.setSrc(scope.getAvatarUrl());
-        }
     }
 }

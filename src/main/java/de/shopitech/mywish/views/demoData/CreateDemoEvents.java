@@ -2,7 +2,6 @@ package de.shopitech.mywish.views.demoData;
 
 import com.thedeanda.lorem.Lorem;
 import com.thedeanda.lorem.LoremIpsum;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
@@ -27,20 +26,17 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 @Route(value = "create-demo-events")
 @PermitAll
-public class CreateEvents extends Div implements HasUrlParameter<String> {
+public class CreateDemoEvents extends Div implements HasUrlParameter<String> {
 
     private BenutzerRepository benutzerRepository;
     private EventRepository eventRepository;
     private Lorem lorem;
     private Random random;
 
-    public CreateEvents(BenutzerRepository benutzerRepository, EventRepository eventRepository) {
+    public CreateDemoEvents(BenutzerRepository benutzerRepository, EventRepository eventRepository) {
         this.benutzerRepository = benutzerRepository;
         this.eventRepository = eventRepository;
         this.lorem = LoremIpsum.getInstance();

@@ -7,28 +7,24 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
-import de.shopitech.mywish.data.entity.Benutzer;
 import de.shopitech.mywish.data.entity.Geschenk;
 import de.shopitech.mywish.data.repository.GeschenkRepository;
-import de.shopitech.mywish.views.events.EventOverview;
 import jakarta.annotation.security.PermitAll;
 
 import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
 
 @Route(value = "create-demo-geschenke")
 @PermitAll
-public class CreateGeschenke extends Div implements HasUrlParameter<String> {
+public class CreateDemoGeschenke extends Div implements HasUrlParameter<String> {
 
     private GeschenkRepository geschenkRepository;
     private Lorem lorem;
     private Random random;
 
-    public CreateGeschenke(GeschenkRepository geschenkRepository) {
+    public CreateDemoGeschenke(GeschenkRepository geschenkRepository) {
         this.geschenkRepository = geschenkRepository;
         this.lorem = LoremIpsum.getInstance();
         this.random = new Random();

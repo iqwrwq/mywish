@@ -1,5 +1,7 @@
 package de.shopitech.mywish.views.demoData;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thedeanda.lorem.Lorem;
 import com.thedeanda.lorem.LoremIpsum;
 import com.vaadin.flow.component.button.Button;
@@ -11,11 +13,8 @@ import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 import de.shopitech.mywish.data.entity.Benutzer;
-import de.shopitech.mywish.data.entity.Event;
 import de.shopitech.mywish.data.repository.BenutzerRepository;
-import de.shopitech.mywish.data.repository.EventRepository;
 import de.shopitech.mywish.security.AuthenticatedUser;
-import de.shopitech.mywish.views.events.EventOverview;
 import jakarta.annotation.security.PermitAll;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
@@ -23,28 +22,35 @@ import org.springframework.core.io.Resource;
 import org.springframework.util.StreamUtils;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.UUID;
 
 import static de.shopitech.mywish.data.entity.Benutzer.DICE_API_URL;
 
 @Route(value = "create-demo-users")
 @PermitAll
-public class CreateUsers extends Div implements HasUrlParameter<String> {
+public class CreateDemoBenutzer extends Div implements HasUrlParameter<String> {
 
-    private BenutzerRepository benutzerRepository;
-    private Lorem lorem;
-    private Random random;
+    private final BenutzerRepository benutzerRepository;
+    private final Lorem lorem;
 
     @Value("${admin.username}")
     private String adminUsername;
 
-    public CreateUsers(BenutzerRepository benutzerRepository) {
+    @Value("${unsplash.accesskey}")
+    public String UNSPLASH_ACCESS_KEY;
+
+    @Value("${unsplash.secret}")
+    public String UNSPLASH_SECRET_KEY;
+
+    public CreateDemoBenutzer(BenutzerRepository benutzerRepository) {
         this.benutzerRepository = benutzerRepository;
         this.lorem = LoremIpsum.getInstance();
-        this.random = new Random();
     }
 
     @Override
@@ -79,6 +85,7 @@ public class CreateUsers extends Div implements HasUrlParameter<String> {
                 benutzer.setNachname(lorem.getLastName());
                 benutzer.setEncryptedPassword(AuthenticatedUser.hashPassword("123"));
                 benutzer.setAvatarUrl(DICE_API_URL + benutzer.getUserID().toString());
+                benutzer.setBannerUrl(getRandomUnsplashImageUrl());
 
                 data.add(benutzer);
 
@@ -89,17 +96,25 @@ public class CreateUsers extends Div implements HasUrlParameter<String> {
             add(new H1("☑️ " + parameter + " Event(s) ☑️"));
             add(items);
         } catch (Exception e) {
-            add(new Span(e.toString()));
+            throw new RuntimeException(e);
         }
     }
 
-    private byte[] loadProfilePictureData(int index) throws IOException {
-        Resource resource = new ClassPathResource("pb" + index + ".jpeg");
-        return StreamUtils.copyToByteArray(resource.getInputStream());
-    }
+    private String getRandomUnsplashImageUrl() {
+        try {
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("https://api.unsplash.com/photos/random?client_id=" + UNSPLASH_ACCESS_KEY))
+                    .build();
 
-    private byte[] loadBannerData(int index) throws IOException {
-        Resource resource = new ClassPathResource("banner" + index + ".jpeg");
-        return StreamUtils.copyToByteArray(resource.getInputStream());
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonNode = objectMapper.readTree(response.body());
+
+            return jsonNode.get("urls").get("regular").asText();
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -12,12 +12,10 @@ import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 import de.shopitech.mywish.data.entity.Benutzer;
 import de.shopitech.mywish.data.entity.Event;
-import de.shopitech.mywish.data.entity.Geschenk;
 import de.shopitech.mywish.data.entity.Geschenkliste;
 import de.shopitech.mywish.data.repository.BenutzerRepository;
 import de.shopitech.mywish.data.repository.EventRepository;
 import de.shopitech.mywish.data.repository.GeschenklisteRepository;
-import de.shopitech.mywish.views.events.EventOverview;
 import jakarta.annotation.security.PermitAll;
 
 import java.util.ArrayList;
@@ -27,7 +25,7 @@ import java.util.UUID;
 
 @Route(value = "create-demo-geschenkelisten")
 @PermitAll
-public class CreateGeschenkeListen extends Div implements HasUrlParameter<String> {
+public class CreateDemoGeschenkeListen extends Div implements HasUrlParameter<String> {
 
     private BenutzerRepository benutzerRepository;
     private EventRepository eventRepository;
@@ -35,7 +33,7 @@ public class CreateGeschenkeListen extends Div implements HasUrlParameter<String
     private Lorem lorem;
     private Random random;
 
-    public CreateGeschenkeListen(BenutzerRepository benutzerRepository, EventRepository eventRepository, GeschenklisteRepository geschenklisteRepository) {
+    public CreateDemoGeschenkeListen(BenutzerRepository benutzerRepository, EventRepository eventRepository, GeschenklisteRepository geschenklisteRepository) {
         this.benutzerRepository = benutzerRepository;
         this.eventRepository = eventRepository;
         this.geschenklisteRepository = geschenklisteRepository;
