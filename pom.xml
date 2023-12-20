@@ -4,14 +4,14 @@
     <modelVersion>4.0.0</modelVersion>
     <!-- Project from https://start.vaadin.com/project/3f207c14-0f91-4541-ba9f-731797340350 -->
     <groupId>de.shopitech.mywish</groupId>
-    <artifactId>mywish</artifactId>
-    <name>mywish</name>
-    <version>1.0-SNAPSHOT</version>
+    <artifactId>cpwm</artifactId>
+    <name>come-party-with-me</name>
+    <version>0.0.1</version>
     <packaging>jar</packaging>
 
     <properties>
         <java.version>17</java.version>
-        <vaadin.version>24.2.5</vaadin.version>
+        <vaadin.version>24.2.0</vaadin.version>
     </properties>
 
     <parent>
